@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,9 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import br.com.sp.senai.findjob.model.CadastroDeVagas;
 
 public class VagasExcel  {
+	
 
 		  public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-		  static String[] HEADERs = { "id", "titulo", "descricao", "exigencia","desejavel", "telefone", "email" };
+		  static String[] HEADERs = { "id", "titulo", "descricao", "exigencia","desejavel", "telefone", "email", "areaVaga" };
 		  static String SHEET = "vagas";
 
 	
@@ -35,6 +34,7 @@ public class VagasExcel  {
 		    return true;
 		  }
 
+
 		  public static List<CadastroDeVagas> excelToTutorials(InputStream is) {
 		    try {
 		      Workbook workbook = new XSSFWorkbook(is);
@@ -42,7 +42,7 @@ public class VagasExcel  {
 		      Sheet sheet = workbook.getSheet(SHEET);
 		      Iterator<Row> rows = sheet.iterator();
 
-		      List<CadastroDeVagas> tutorials = new ArrayList<CadastroDeVagas>();
+		      List<CadastroDeVagas> vagas = new ArrayList<CadastroDeVagas>();
 
 		      int rowNumber = 0;
 		      while (rows.hasNext()) {
@@ -56,27 +56,40 @@ public class VagasExcel  {
 
 		        Iterator<Cell> cellsInRow = currentRow.iterator();
 
-		        CadastroDeVagas cadVagas = new CadastroDeVagas;
+		       CadastroDeVagas cad = new CadastroDeVagas();
 
 		        int cellIdx = 0;
 		        while (cellsInRow.hasNext()) {
 		          Cell currentCell = cellsInRow.next();
 
+		
 		          switch (cellIdx) {
 		          case 0:
-		        	  cadVagas.setId((long) currentCell.getNumericCellValue());
+		        	  cad.setId((long) currentCell.getNumericCellValue());
 		            break;
 
 		          case 1:
-		        	  cadVagas.set(currentCell.getStringCellValue());
+		        	  cad.setTitulo(currentCell.getStringCellValue());
 		            break;
 
 		          case 2:
-		        	  cadVagas.setDescription(currentCell.getStringCellValue());
+		        	  cad.setDescricao(currentCell.getStringCellValue());
 		            break;
 
 		          case 3:
-		        	  cadVagas.setPublished(currentCell.getBooleanCellValue());
+		        	  cad.setExigencia(currentCell.getStringCellValue());
+		            break;
+		          case 4:
+		        	  cad.setDesejavel(currentCell.getStringCellValue());
+		            break;
+		          case 5:
+		        	  cad.setTelefone(currentCell.getStringCellValue());
+		            break;
+		          case 6:
+		        	  cad.setEmail(currentCell.getStringCellValue());
+		            break;
+		          case 7:
+		        	  cad.setAreaVaga(currentCell.getStringCellValue());
 		            break;
 
 		          default:
@@ -86,10 +99,10 @@ public class VagasExcel  {
 		          cellIdx++;
 		        }
 
-		        vagas.add(cadVagas);
+		       vagas.add(cad);
 		      }
 
-		      workbook.close();
+		      workbook.close(); 
 
 		      return vagas;
 		    } catch (IOException e) {

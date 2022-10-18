@@ -20,7 +20,7 @@ public class VagasExcel  {
 
 		  public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 		  static String[] HEADERs = { "id", "titulo", "descricao", "exigencia","desejavel", "telefone", "email", "areaVaga" };
-		  static String SHEET = "vagas";
+		  static String SHEET = "formsVagas";
 
 	
 			
@@ -33,9 +33,11 @@ public class VagasExcel  {
 
 		    return true;
 		  }
+		  
 
 
-		  public static List<CadastroDeVagas> excelToTutorials(InputStream is) {
+		  public static List<CadastroDeVagas> excelToVagas(InputStream is) {
+			  
 		    try {
 		      Workbook workbook = new XSSFWorkbook(is);
 
@@ -48,7 +50,7 @@ public class VagasExcel  {
 		      while (rows.hasNext()) {
 		        Row currentRow = rows.next();
 
-		        // skip header
+		      
 		        if (rowNumber == 0) {
 		          rowNumber++;
 		          continue;

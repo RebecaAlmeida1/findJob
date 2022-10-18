@@ -10,23 +10,28 @@ import org.springframework.web.multipart.MultipartFile;
 import br.com.sp.senai.findjob.excel.VagasExcel;
 import br.com.sp.senai.findjob.model.CadastroDeVagas;
 import br.com.sp.senai.findjob.repository.VagasRepository;
+
 @Service
 public class VagasService {
+
+	@Autowired
+	private VagasRepository repVaga;
+
+	public void save(MultipartFile file) {
 	
-		@Autowired
-		private VagasRepository repVaga;
+		try {
+			List<CadastroDeVagas> vagas = VagasExcel.excelToVagas(file.getInputStream());
+			
+			// aqui está o erro
+			System.out.println(vagas);
+			
+			 repVaga.saveAll(vagas);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
 
-		 public void save(MultipartFile file) {
-			    try {
-			      List<CadastroDeVagas> vagas = VagasExcel.excelToTutorials(file.getInputStream());
-			      repVaga.saveAll(vagas);
-			    } catch (IOException e) {
-			      throw new RuntimeException("fail to store excel data: " + e.getMessage());
-			    }
-			  }
-
-			  public List<CadastroDeVagas> getAllTutorials() {
-			    return repVaga.findAll();
-			  }
-			}
-
+	public List<CadastroDeVagas> getAllVagas() {
+		return repVaga.findAll();
+	}
+}

@@ -1,114 +1,63 @@
 package br.com.sp.senai.findjob.excel;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.OutputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
-import br.com.sp.senai.findjob.model.CadastroDeVagas;
+public class VagasExcel {
 
-public class VagasExcel  {
-	
+	public static void lendoVgas(String[] args) {
 
-		  public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-		  static String[] HEADERs = { "id", "titulo", "descricao", "exigencia","desejavel", "telefone", "email", "areaVaga" };
-		  static String SHEET = "formsVagas";
-
-	
+		try {
+			URL link = new URL(
+					"https://sesisenaispedu-my.sharepoint.com/:x:/g/personal/rebeca_almeida5_senaisp_edu_br/EeiF6j7ZZrVAk3x3kd-9FE4BfIJ1yIb4URkP02uU6SrINQ?e=e5I6pJ");
+			File arquivo = new File(System.getProperty("user.dir"),"cadastroDeVagas.xlsx");
 			
 
-		  public static boolean hasExcelFormat(MultipartFile file) {
+			System.out.println("Deu certo, iniciando Download");
+			long tempo = System.currentTimeMillis();
+			
+			
+			
+			VagasExcel download = new VagasExcel(link);
+			download.saveTo(arquivo);
 
-		    if (!TYPE.equals(file.getContentType())) {
-		      return false;
-		    }
-
-		    return true;
-		  }
-		  
-
-
-		  public static List<CadastroDeVagas> excelToVagas(InputStream is) {
-			  
-		    try {
-		      Workbook workbook = new XSSFWorkbook(is);
-
-		      Sheet sheet = workbook.getSheet(SHEET);
-		      Iterator<Row> rows = sheet.iterator();
-
-		      List<CadastroDeVagas> vagas = new ArrayList<CadastroDeVagas>();
-
-		      int rowNumber = 0;
-		      while (rows.hasNext()) {
-		        Row currentRow = rows.next();
-
-		      
-		        if (rowNumber == 0) {
-		          rowNumber++;
-		          continue;
-		        }
-
-		        Iterator<Cell> cellsInRow = currentRow.iterator();
-
-		       CadastroDeVagas cad = new CadastroDeVagas();
-
-		        int cellIdx = 0;
-		        while (cellsInRow.hasNext()) {
-		          Cell currentCell = cellsInRow.next();
-
-		
-		          switch (cellIdx) {
-		          case 0:
-		        	  cad.setId((long) currentCell.getNumericCellValue());
-		            break;
-
-		          case 1:
-		        	  cad.setTitulo(currentCell.getStringCellValue());
-		            break;
-
-		          case 2:
-		        	  cad.setDescricao(currentCell.getStringCellValue());
-		            break;
-
-		          case 3:
-		        	  cad.setExigencia(currentCell.getStringCellValue());
-		            break;
-		          case 4:
-		        	  cad.setDesejavel(currentCell.getStringCellValue());
-		            break;
-		          case 5:
-		        	  cad.setTelefone(currentCell.getStringCellValue());
-		            break;
-		          case 6:
-		        	  cad.setEmail(currentCell.getStringCellValue());
-		            break;
-		          case 7:
-		        	  cad.setAreaVaga(currentCell.getStringCellValue());
-		            break;
-
-		          default:
-		            break;
-		          }
-
-		          cellIdx++;
-		        }
-
-		       vagas.add(cad);
-		      }
-
-		      workbook.close(); 
-
-		      return vagas;
-		    } catch (IOException e) {
-		      throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
-		    }
-		  }
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
+
+	}
+
+	private final URL url;
+
+	public VagasExcel(URL url) {
+		this.url = url;
+	}
+
+	public void saveTo(File file) throws IOException {
+		FileOutputStream out = new FileOutputStream(file);
+		saveTo(out);
+		out.close();
+	}
+
+	public void saveTo(OutputStream out) throws IOException {
+		InputStream in = url.openStream();
+		byte[] buffer = new byte[8192];
+		for (int read = -1; (read = in.read(buffer)) != -1; out.write(buffer, 0, read)) {
+		}
+		out.flush();
+	}
+
+	public static boolean hasExcelFormat(MultipartFile file) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+}
